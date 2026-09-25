@@ -200,7 +200,7 @@
             <label for="investimento-n">Investimento mensal</label>
             <div class="num"><span>US$</span><input id="investimento-n" type="number" min="0" step="100"></div>
           </div>
-          <input id="investimento" type="range" min="500" max="20000" step="100" value="500" aria-label="Investimento mensal">
+          <input id="investimento" type="range" min="500" max="5000" step="100" value="500" aria-label="Investimento mensal">
           <small>Anúncios e gestão de marketing por mês.</small>
         </div>
 
@@ -335,11 +335,17 @@
 
     REGIOES.forEach((nome) => $("regiao").add(new Option(nome, nome)));
 
-    // Slider e caixa de número ficam sincronizados; a caixa aceita valores fora do slider.
+    // Slider e caixa de número ficam sincronizados. A caixa aceita valores acima do fim do slider;
+    // nesse caso o slider fica no final (investimento: US$ 5.000).
     fields.forEach((f) => {
       const range = $(f), box = $(f + "-n");
       range.addEventListener("input", () => { box.value = range.value; changed(); });
-      box.addEventListener("input", () => { if (box.value !== "") range.value = box.value; changed(); });
+      box.addEventListener("input", () => {
+        // Taxa não passa de 100%.
+        if (box.max && parseFloat(box.value) > parseFloat(box.max)) box.value = box.max;
+        if (box.value !== "") range.value = box.value;
+        changed();
+      });
     });
     $("servico").addEventListener("change", () => {
       $("cpl-field").hidden = $("servico").value !== "outro";
