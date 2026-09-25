@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculadora de Resultados | FIXXA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --panel: #141414;
+      --panel-2: #1c1c1c;
+      --border: #2a2a2a;
+      --text: #fafafa;
+      --muted: #9a9a9a;
+      --accent: #f3d600;
+      --accent-soft: rgba(243, 214, 0, 0.1);
+      --invest: #5c5c5c;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, system-ui, sans-serif;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+    .wrap { max-width: 1240px; margin: 0 auto; padding: 40px 24px 64px; }
+    header { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; margin-bottom: 32px; }
+    .brand { display: block; margin-bottom: 28px; }
+    .brand img { height: 30px; width: auto; display: block; }
+    .eyebrow { font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); font-weight: 600; }
+    h1 { font-family: Montserrat, Inter, sans-serif; font-weight: 800; letter-spacing: -0.01em; font-size: clamp(30px, 4vw, 44px); margin-top: 8px; line-height: 1.1; }
+    header p { color: var(--muted); margin-top: 8px; max-width: 560px; font-size: 15px; }
+
+    .grid { display: grid; grid-template-columns: 380px 1fr; gap: 24px; }
+    @media (max-width: 960px) { .grid { grid-template-columns: 1fr; } }
+
+    .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 28px; }
+    .panel h2 { font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); font-weight: 600; margin-bottom: 24px; }
+
+    .field { margin-bottom: 28px; }
+    .field:last-child { margin-bottom: 0; }
+    .field-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .field label { font-size: 14px; font-weight: 500; }
+    .field small { display: block; color: var(--muted); font-size: 12px; margin-top: 8px; }
+    .num {
+      display: flex; align-items: center; background: var(--panel-2); border: 1px solid var(--border);
+      border-radius: 8px; padding: 0 10px; transition: border-color .2s;
+    }
+    .num:focus-within { border-color: var(--accent); }
+    .num span { color: var(--muted); font-size: 14px; }
+    .num input {
+      background: transparent; border: 0; color: var(--text); font: inherit; font-size: 16px; font-weight: 600;
+      width: 110px; padding: 8px 4px; text-align: right; outline: none;
+    }
+    .num input::-webkit-outer-spin-button, .num input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    .num input[type=number] { -moz-appearance: textfield; }
+
+    input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 6px; border-radius: 3px; background: var(--border); outline: none; cursor: pointer; }
+    input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%; background: var(--accent); border: 3px solid var(--bg); box-shadow: 0 0 0 1px var(--accent); }
+    input[type=range]::-moz-range-thumb { width: 16px; height: 16px; border-radius: 50%; background: var(--accent); border: 3px solid var(--bg); }
+    input[type=range]:focus-visible { box-shadow: 0 0 0 3px var(--accent-soft); }
+
+    .results { display: flex; flex-direction: column; gap: 24px; }
+    .hero-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    @media (max-width: 640px) { .hero-stats { grid-template-columns: 1fr; } }
+    .stat { background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 24px; }
+    .stat.main { background: linear-gradient(0deg, var(--accent-soft), var(--accent-soft)), var(--panel); border-color: rgba(243,214,0,.5); }
+    .stat .label { font-size: 13px; color: var(--muted); }
+    .stat .value { font-family: Montserrat, Inter, sans-serif; font-size: clamp(28px, 3.2vw, 40px); font-weight: 800; margin-top: 8px; font-variant-numeric: tabular-nums; line-height: 1.1; }
+    .stat.main .value { color: var(--accent); }
+    .stat .sub { font-size: 13px; color: var(--muted); margin-top: 6px; }
+
+    .funnel { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    @media (max-width: 640px) { .funnel { grid-template-columns: 1fr 1fr; } }
+    .step { position: relative; background: var(--panel-2); border-radius: 12px; padding: 18px; }
+    .step .k { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+    .step .v { font-size: 24px; font-weight: 700; margin-top: 6px; font-variant-numeric: tabular-nums; }
+    .step .bar { height: 4px; border-radius: 2px; background: var(--border); margin-top: 14px; overflow: hidden; }
+    .step .bar i { display: block; height: 100%; background: var(--accent); width: 0; transition: width .5s ease; }
+
+    .metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 12px; }
+    @media (max-width: 640px) { .metrics { grid-template-columns: 1fr; } }
+    .metric { border-top: 1px solid var(--border); padding-top: 14px; }
+    .metric .k { font-size: 13px; color: var(--muted); }
+    .metric .v { font-size: 20px; font-weight: 600; margin-top: 4px; font-variant-numeric: tabular-nums; }
+
+    .chart-head { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; }
+    .chart-head h2 { margin-bottom: 0; }
+    .legend { display: flex; gap: 18px; font-size: 13px; color: var(--muted); }
+    .legend span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+    .legend .l-rev::before { background: var(--accent); }
+    .legend .l-inv::before { background: var(--invest); }
+    #chart { width: 100%; height: 280px; display: block; }
+    #chart text { fill: var(--muted); font-size: 11px; font-family: Inter, sans-serif; }
+
+    .select {
+      width: 100%; appearance: none; -webkit-appearance: none; background: var(--panel-2); color: var(--text);
+      border: 1px solid var(--border); border-radius: 8px; padding: 12px 40px 12px 14px; font: inherit; font-size: 16px; font-weight: 600; cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23f3d600' stroke-width='2'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 14px center; transition: border-color .2s;
+    }
+    .select:focus-visible { border-color: var(--accent); outline: none; }
+    .select option { background: var(--panel-2); }
+    .custom-cpl { margin-top: 12px; margin-bottom: 0; }
+    .custom-cpl[hidden] { display: none; }
+    .readonly { display: flex; justify-content: space-between; align-items: center; gap: 12px; background: var(--panel-2); border: 1px dashed var(--border); border-radius: 8px; padding: 12px 14px; }
+    .readonly span { font-size: 14px; font-weight: 500; }
+    .readonly output { font-size: 20px; font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; }
+
+    .note { color: var(--muted); font-size: 12px; margin-top: 16px; }
+    .fade { animation: fade .6s ease both; }
+    @keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+    .calc-btn {
+      width: 100%; margin-top: 8px; background: var(--accent); color: #0a0a0a; border: 0; border-radius: 8px;
+      padding: 16px; font-family: Montserrat, Inter, sans-serif; font-size: 15px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase;
+      cursor: pointer; transition: transform .15s, opacity .2s, box-shadow .2s;
+    }
+    .calc-btn:hover:not(:disabled) { box-shadow: 0 0 0 4px var(--accent-soft); }
+    .calc-btn:active:not(:disabled) { transform: translateY(1px); }
+    .calc-btn:disabled { opacity: .3; cursor: not-allowed; }
+    .calc-hint { display: block; text-align: center; color: var(--muted); font-size: 12px; margin-top: 10px; }
+
+    .results { position: relative; }
+    .results > :not(.loading) { transition: opacity .4s, filter .4s; }
+    .results[data-state="idle"] > :not(.loading) { opacity: .55; }
+    .results[data-state="loading"] > :not(.loading) { opacity: .15; filter: blur(3px); }
+    .loading {
+      position: absolute; inset: 0; z-index: 5; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; padding: 24px; animation: fade .3s ease both;
+    }
+    .loading[hidden] { display: none; }
+    .spinner { width: 48px; height: 48px; border-radius: 50%; border: 3px solid var(--border); border-top-color: var(--accent); animation: spin .8s linear infinite; }
+    .loading-title { font-family: Montserrat, Inter, sans-serif; font-weight: 800; font-size: 22px; margin-top: 24px; }
+    .loading-step { color: var(--muted); font-size: 14px; margin-top: 8px; min-height: 20px; }
+    .progress { width: min(320px, 80%); height: 4px; background: var(--border); border-radius: 2px; margin-top: 20px; overflow: hidden; }
+    .progress i { display: block; height: 100%; width: 0; background: var(--accent); }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .chart-box { position: relative; }
+    .chart-empty { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 14px; text-align: center; padding: 0 16px; }
+    .chart-empty[hidden] { display: none; }
+    #chart .grow { transform-box: fill-box; transform-origin: bottom; animation: grow .6s cubic-bezier(.2,.8,.2,1) both; }
+    @keyframes grow { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="fade">
+      <div>
+        <a class="brand" href="#" aria-label="FIXXA"><img src="assets/logo-fixxa.png" alt="FIXXA" width="800" height="145"></a>
+        <p class="eyebrow">Simulação de resultados</p>
+        <h1>Calculadora de Resultados</h1>
+        <p>Veja quanto o investimento em marketing pode trazer de volta em vendas para a sua empresa de construção nos Estados Unidos.</p>
+      </div>
+    </header>
+
+    <div class="grid">
+      <section class="panel fade" aria-labelledby="inputs-title">
+        <h2 id="inputs-title">Dados do cenário</h2>
+
+        <div class="field">
+          <div class="field-top">
+            <label for="investimento-n">Investimento mensal</label>
+            <div class="num"><span>US$</span><input id="investimento-n" type="number" min="0" step="100"></div>
+          </div>
+          <input id="investimento" type="range" min="500" max="20000" step="100" value="500" aria-label="Investimento mensal">
+          <small>Anúncios e gestão de marketing por mês.</small>
+        </div>
+
+        <div class="field">
+          <div class="field-top">
+            <label for="taxa-n">Taxa de fechamento</label>
+            <div class="num"><input id="taxa-n" type="number" min="0" max="100" step="1"><span>%</span></div>
+          </div>
+          <input id="taxa" type="range" min="1" max="100" step="1" value="1" aria-label="Taxa de fechamento">
+          <small>De cada 100 orçamentos, quantos viram venda.</small>
+        </div>
+
+        <div class="field">
+          <div class="field-top">
+            <label for="ticket-n">Ticket médio do serviço</label>
+            <div class="num"><span>US$</span><input id="ticket-n" type="number" min="0" step="100"></div>
+          </div>
+          <input id="ticket" type="range" min="500" max="50000" step="100" value="500" aria-label="Ticket médio do serviço">
+          <small>Valor médio de cada serviço vendido.</small>
+        </div>
+
+        <div class="field">
+          <div class="readonly">
+            <span>Agendamentos por semana</span>
+            <output id="agendamentos-semana" aria-live="polite"></output>
+          </div>
+          <small>Calculado junto com os resultados.</small>
+        </div>
+
+        <div class="field">
+          <div class="field-top"><label for="servico">Serviço</label></div>
+          <select id="servico" class="select">
+            <option value="" disabled selected>Selecione o serviço</option>
+            <option value="flooring">Flooring</option>
+            <option value="remodeling">Remodeling</option>
+            <option value="painting">Painting</option>
+            <option value="carpentry">Carpentry</option>
+            <option value="gutters">Gutters</option>
+            <option value="fencing">Fencing</option>
+            <option value="roofing">Roofing</option>
+            <option value="hardscape">Hardscape</option>
+            <option value="deck-patio">Deck &amp; Patio</option>
+            <option value="outro">Outro</option>
+          </select>
+          <div class="field-top custom-cpl" id="cpl-field" hidden>
+            <label for="cpl-n">Custo por lead</label>
+            <div class="num"><span>US$</span><input id="cpl-n" type="number" min="1" step="1"></div>
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="field-top"><label for="regiao">Região</label></div>
+          <select id="regiao" class="select">
+            <option value="" disabled selected>Selecione a região</option>
+          </select>
+        </div>
+
+        <button class="calc-btn" id="calcular" type="button" disabled>Calcular resultados</button>
+        <small class="calc-hint" id="calc-hint">Preencha todos os campos para calcular.</small>
+      </section>
+
+      <div class="results" id="results" data-state="idle">
+        <div class="loading" id="loading" hidden role="status" aria-live="polite">
+          <div class="spinner" aria-hidden="true"></div>
+          <p class="loading-title">Calculando resultados</p>
+          <p class="loading-step" id="loading-step"></p>
+          <div class="progress" aria-hidden="true"><i id="progress"></i></div>
+        </div>
+
+        <div class="hero-stats fade">
+          <div class="stat main">
+            <div class="label">Retorno sobre o investimento</div>
+            <div class="value" id="roi">—</div>
+            <div class="sub">o valor investido, em faturamento</div>
+          </div>
+          <div class="stat">
+            <div class="label">Faturamento por mês</div>
+            <div class="value" id="fat-mes">—</div>
+            <div class="sub" id="lucro-mes">&nbsp;</div>
+          </div>
+          <div class="stat">
+            <div class="label">Faturamento em 12 meses</div>
+            <div class="value" id="fat-ano">—</div>
+            <div class="sub" id="inv-ano">&nbsp;</div>
+          </div>
+        </div>
+
+        <section class="panel fade" aria-labelledby="funnel-title">
+          <h2 id="funnel-title">Do anúncio à venda, por mês</h2>
+          <div class="funnel">
+            <div class="step"><div class="k">Investimento</div><div class="v" id="f-inv">—</div><div class="bar"><i id="b-inv"></i></div></div>
+            <div class="step"><div class="k">Agendamentos no mês</div><div class="v" id="f-ag">—</div><div class="bar"><i id="b-ag"></i></div></div>
+            <div class="step"><div class="k">Vendas fechadas</div><div class="v" id="f-vendas">—</div><div class="bar"><i id="b-vendas"></i></div></div>
+            <div class="step"><div class="k">Faturamento</div><div class="v" id="f-fat">—</div><div class="bar"><i id="b-fat"></i></div></div>
+          </div>
+          <div class="metrics">
+            <div class="metric"><div class="k">Custo por agendamento</div><div class="v" id="cpa">—</div></div>
+            <div class="metric"><div class="k">Custo por venda</div><div class="v" id="cpv">—</div></div>
+            <div class="metric"><div class="k">Vendas em 12 meses</div><div class="v" id="vendas-ano">—</div></div>
+          </div>
+        </section>
+
+        <section class="panel fade" aria-labelledby="chart-title">
+          <div class="chart-head">
+            <h2 id="chart-title">Acumulado em 12 meses</h2>
+            <div class="legend"><span class="l-rev">Faturamento</span><span class="l-inv">Investimento</span></div>
+          </div>
+          <div class="chart-box">
+            <svg id="chart" role="img" aria-label="Gráfico do faturamento e do investimento acumulados em 12 meses"></svg>
+            <p class="chart-empty" id="chart-empty">Preencha os dados e clique em Calcular resultados.</p>
+          </div>
+          <p class="note">Simulação com base nos números informados. O retorno é o faturamento dividido pelo investimento.</p>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const fields = ["investimento", "taxa", "ticket"];
+
+    // Custo por lead de referência de cada serviço. Usado só no cálculo, não aparece na tela.
+    const CUSTO_POR_LEAD = {
+      flooring: 30,
+      remodeling: 45,
+      painting: 105,
+      carpentry: 35,
+      gutters: 80,
+      fencing: 40,
+      roofing: 85,
+      hardscape: 40,
+      "deck-patio": 35,
+    };
+    // 40% dos leads gerados viram agendamento
+    const TAXA_AGENDAMENTO = 0.4;
+    // 52 semanas ÷ 12 meses
+    const SEMANAS_POR_MES = 52 / 12;
+    // Duração do carregamento simulado, em milissegundos
+    const DURACAO_CALCULO = 4000;
+
+    // A região não entra no cálculo; só aparece no texto do carregamento.
+    const REGIOES = [
+      "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware",
+      "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky",
+      "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi",
+      "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico",
+      "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania",
+      "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont",
+      "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming",
+    ];
+
+    const $ = (id) => document.getElementById(id);
+
+    const usd = (v) => "US$ " + Math.round(v).toLocaleString("pt-BR");
+    const usdShort = (v) => {
+      if (Math.abs(v) >= 1e6) return "US$ " + (v / 1e6).toLocaleString("pt-BR", { maximumFractionDigits: 1 }) + " mi";
+      if (Math.abs(v) >= 1e3) return "US$ " + (v / 1e3).toLocaleString("pt-BR", { maximumFractionDigits: 0 }) + " mil";
+      return usd(v);
+    };
+    const num = (v, d = 0) => v.toLocaleString("pt-BR", { maximumFractionDigits: d, minimumFractionDigits: 0 });
+
+    REGIOES.forEach((nome) => $("regiao").add(new Option(nome, nome)));
+
+    // Slider e caixa de número ficam sincronizados; a caixa aceita valores fora do slider.
+    fields.forEach((f) => {
+      const range = $(f), box = $(f + "-n");
+      range.addEventListener("input", () => { box.value = range.value; changed(); });
+      box.addEventListener("input", () => { if (box.value !== "") range.value = box.value; changed(); });
+    });
+    $("servico").addEventListener("change", () => {
+      $("cpl-field").hidden = $("servico").value !== "outro";
+      changed();
+    });
+    $("cpl-n").addEventListener("input", changed);
+    $("regiao").addEventListener("change", changed);
+    $("calcular").addEventListener("click", calcular);
+    window.addEventListener("resize", () => { if (ultimo) drawChart(ultimo.investimento, ultimo.faturamento); });
+
+    let ultimo = null;
+    let timers = [];
+
+    function get(f) {
+      const v = parseFloat($(f + "-n").value);
+      return Number.isFinite(v) && v > 0 ? v : null;
+    }
+
+    function values() {
+      const investimento = get("investimento");
+      const taxa = get("taxa");
+      const ticket = get("ticket");
+      const servico = $("servico").value;
+      const regiao = $("regiao").value;
+      const cpl = servico === "outro" ? get("cpl") : CUSTO_POR_LEAD[servico];
+      if (!investimento || !taxa || !ticket || !servico || !regiao || !cpl) return null;
+      return { investimento, taxa: Math.min(100, taxa) / 100, ticket, cpl, servico, regiao };
+    }
+
+    // Qualquer mudança nos dados apaga o resultado anterior; é preciso calcular de novo.
+    function changed() {
+      timers.forEach(clearTimeout);
+      timers = [];
+      ultimo = null;
+      $("loading").hidden = true;
+      $("results").dataset.state = "idle";
+      limpar();
+      const pronto = values() !== null;
+      $("calcular").disabled = !pronto;
+      $("calc-hint").textContent = pronto ? "Tudo pronto." : "Preencha todos os campos para calcular.";
+    }
+
+    function limpar() {
+      ["roi", "fat-mes", "fat-ano", "f-inv", "f-ag", "f-vendas", "f-fat", "cpa", "cpv", "vendas-ano"].forEach((id) => { $(id).textContent = "—"; });
+      $("lucro-mes").innerHTML = "&nbsp;";
+      $("inv-ano").innerHTML = "&nbsp;";
+      $("agendamentos-semana").textContent = "";
+      ["b-inv", "b-ag", "b-vendas", "b-fat"].forEach((id) => { $(id).style.width = "0"; });
+      $("chart").innerHTML = "";
+      $("chart-empty").hidden = false;
+    }
+
+    function calcular() {
+      const v = values();
+      if (!v) return;
+      const nomeServico = v.servico === "outro" ? "o serviço" : $("servico").selectedOptions[0].text;
+      const etapas = [
+        `Analisando o mercado de ${v.regiao}`,
+        `Buscando dados de ${nomeServico}`,
+        "Estimando leads e agendamentos",
+        "Montando a projeção de 12 meses",
+      ];
+
+      $("calcular").disabled = true;
+      $("results").dataset.state = "loading";
+      $("loading").hidden = false;
+      $("progress").style.transition = "none";
+      $("progress").style.width = "0";
+      void $("progress").offsetWidth;
+      $("progress").style.transition = `width ${DURACAO_CALCULO}ms linear`;
+      $("progress").style.width = "100%";
+
+      etapas.forEach((texto, i) => {
+        timers.push(setTimeout(() => { $("loading-step").textContent = texto + "…"; }, (DURACAO_CALCULO / etapas.length) * i));
+      });
+      timers.push(setTimeout(() => {
+        $("loading").hidden = true;
+        $("results").dataset.state = "done";
+        $("calcular").disabled = false;
+        $("calc-hint").textContent = "Altere qualquer dado para calcular de novo.";
+        mostrar(v);
+      }, DURACAO_CALCULO));
+    }
+
+    // Anima um número de 0 até o valor final.
+    function contar(el, final, formato, ms = 900) {
+      const inicio = performance.now();
+      const passo = (agora) => {
+        const t = Math.min(1, (agora - inicio) / ms);
+        const e = 1 - Math.pow(1 - t, 3);
+        el.textContent = formato(final * e);
+        if (t < 1 && ultimo) requestAnimationFrame(passo);
+      };
+      requestAnimationFrame(passo);
+    }
+
+    function mostrar({ investimento, taxa, ticket, cpl }) {
+      const agendamentos = (investimento / cpl) * TAXA_AGENDAMENTO;
+      const vendas = agendamentos * taxa;
+      const faturamento = vendas * ticket;
+      const retorno = faturamento / investimento;
+      ultimo = { investimento, faturamento };
+
+      contar($("roi"), retorno, (x) => num(x, 1) + "x");
+      contar($("fat-mes"), faturamento, usd);
+      contar($("fat-ano"), faturamento * 12, usdShort);
+      contar($("agendamentos-semana"), agendamentos / SEMANAS_POR_MES, (x) => num(x, 1));
+
+      const diff = faturamento - investimento;
+      $("lucro-mes").textContent = (diff >= 0 ? usd(diff) + " acima" : usd(-diff) + " abaixo") + " do investimento";
+      $("inv-ano").textContent = "com " + usd(investimento * 12) + " investidos";
+
+      $("f-inv").textContent = usd(investimento);
+      $("f-ag").textContent = num(agendamentos);
+      $("f-vendas").textContent = num(vendas, 1);
+      $("f-fat").textContent = usdShort(faturamento);
+      const maxMoney = Math.max(investimento, faturamento, 1);
+      $("b-inv").style.width = (investimento / maxMoney) * 100 + "%";
+      $("b-ag").style.width = "100%";
+      $("b-vendas").style.width = taxa * 100 + "%";
+      $("b-fat").style.width = (faturamento / maxMoney) * 100 + "%";
+
+      $("cpa").textContent = usd(investimento / agendamentos);
+      $("cpv").textContent = vendas > 0 ? usd(investimento / vendas) : "—";
+      $("vendas-ano").textContent = num(vendas * 12);
+
+      $("chart-empty").hidden = true;
+      drawChart(investimento, faturamento);
+    }
+
+    function drawChart(inv, fat) {
+      const svg = $("chart");
+      const W = svg.clientWidth || 800, H = svg.clientHeight || 280;
+      const pad = { l: 64, r: 12, t: 12, b: 28 };
+      const cw = W - pad.l - pad.r, ch = H - pad.t - pad.b;
+      const max = Math.max(fat * 12, inv * 12, 1) * 1.08;
+      const slot = cw / 12, bw = Math.min(14, slot / 3.2);
+      const y = (v) => pad.t + ch - (v / max) * ch;
+
+      let out = "";
+      for (let i = 0; i <= 4; i++) {
+        const v = (max / 4) * i, yy = y(v);
+        out += `<line x1="${pad.l}" x2="${W - pad.r}" y1="${yy}" y2="${yy}" stroke="#2a2a2a" stroke-width="1"/>`;
+        out += `<text x="${pad.l - 8}" y="${yy + 4}" text-anchor="end">${usdShort(v).replace("US$ ", "$")}</text>`;
+      }
+      for (let m = 1; m <= 12; m++) {
+        const cx = pad.l + slot * (m - 0.5);
+        const fv = fat * m, iv = inv * m;
+        const delay = (m - 1) * 40;
+        out += `<rect class="grow" style="animation-delay:${delay}ms" x="${cx - bw - 1}" y="${y(iv)}" width="${bw}" height="${pad.t + ch - y(iv)}" rx="2" fill="#5c5c5c"><title>Mês ${m}: investimento ${usd(iv)}</title></rect>`;
+        out += `<rect class="grow" style="animation-delay:${delay}ms" x="${cx + 1}" y="${y(fv)}" width="${bw}" height="${pad.t + ch - y(fv)}" rx="2" fill="#f3d600"><title>Mês ${m}: faturamento ${usd(fv)}</title></rect>`;
+        out += `<text x="${cx}" y="${H - 8}" text-anchor="middle">M${m}</text>`;
+      }
+      svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+      svg.innerHTML = out;
+    }
+
+    changed();
+  </script>
+</body>
+</html>
