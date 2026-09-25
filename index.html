@@ -165,41 +165,6 @@
         <h2 id="inputs-title">Dados do cenário</h2>
 
         <div class="field">
-          <div class="field-top">
-            <label for="investimento-n">Investimento mensal</label>
-            <div class="num"><span>US$</span><input id="investimento-n" type="number" min="0" step="100"></div>
-          </div>
-          <input id="investimento" type="range" min="500" max="20000" step="100" value="500" aria-label="Investimento mensal">
-          <small>Anúncios e gestão de marketing por mês.</small>
-        </div>
-
-        <div class="field">
-          <div class="field-top">
-            <label for="taxa-n">Taxa de fechamento</label>
-            <div class="num"><input id="taxa-n" type="number" min="0" max="100" step="1"><span>%</span></div>
-          </div>
-          <input id="taxa" type="range" min="1" max="100" step="1" value="1" aria-label="Taxa de fechamento">
-          <small>De cada 100 orçamentos, quantos viram venda.</small>
-        </div>
-
-        <div class="field">
-          <div class="field-top">
-            <label for="ticket-n">Ticket médio do serviço</label>
-            <div class="num"><span>US$</span><input id="ticket-n" type="number" min="0" step="100"></div>
-          </div>
-          <input id="ticket" type="range" min="500" max="50000" step="100" value="500" aria-label="Ticket médio do serviço">
-          <small>Valor médio de cada serviço vendido.</small>
-        </div>
-
-        <div class="field">
-          <div class="readonly">
-            <span>Agendamentos por semana</span>
-            <output id="agendamentos-semana" aria-live="polite"></output>
-          </div>
-          <small>Calculado junto com os resultados.</small>
-        </div>
-
-        <div class="field">
           <div class="field-top"><label for="servico">Serviço</label></div>
           <select id="servico" class="select">
             <option value="" disabled selected>Selecione o serviço</option>
@@ -225,6 +190,41 @@
           <select id="regiao" class="select">
             <option value="" disabled selected>Selecione a região</option>
           </select>
+        </div>
+
+        <div class="field">
+          <div class="field-top">
+            <label for="investimento-n">Investimento mensal</label>
+            <div class="num"><span>US$</span><input id="investimento-n" type="number" min="0" step="100"></div>
+          </div>
+          <input id="investimento" type="range" min="500" max="20000" step="100" value="500" aria-label="Investimento mensal">
+          <small>Anúncios e gestão de marketing por mês.</small>
+        </div>
+
+        <div class="field">
+          <div class="readonly">
+            <span>Agendamentos por semana</span>
+            <output id="agendamentos-semana" aria-live="polite"></output>
+          </div>
+          <small>Calculado junto com os resultados.</small>
+        </div>
+
+        <div class="field">
+          <div class="field-top">
+            <label for="taxa-n">Taxa de fechamento</label>
+            <div class="num"><input id="taxa-n" type="number" min="0" max="100" step="1"><span>%</span></div>
+          </div>
+          <input id="taxa" type="range" min="1" max="100" step="1" value="1" aria-label="Taxa de fechamento">
+          <small>De cada 100 orçamentos, quantos viram venda.</small>
+        </div>
+
+        <div class="field">
+          <div class="field-top">
+            <label for="ticket-n">Ticket médio do serviço</label>
+            <div class="num"><span>US$</span><input id="ticket-n" type="number" min="0" step="100"></div>
+          </div>
+          <input id="ticket" type="range" min="500" max="50000" step="100" value="500" aria-label="Ticket médio do serviço">
+          <small>Valor médio de cada serviço vendido.</small>
         </div>
 
         <button class="calc-btn" id="calcular" type="button" disabled>Calcular resultados</button>
